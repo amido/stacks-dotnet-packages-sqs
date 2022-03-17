@@ -1,0 +1,65 @@
+variables:
+  - name: region
+    value: westeurope
+  - name: company
+    value: amido
+  - name: project
+    value: stacks
+  - name: domain
+    value: netcore-api
+  - name: self_repo
+    value: stacks-dotnet
+  - name: self_generic_name
+    value: stacks-api
+
+  # GitHub infomration
+  - name: create_release
+    value: true
+  - name: github_release_service_connection
+    value: GitHubReleases
+  - name: github_org
+    value: $(company)
+
+  # Nuget information
+  - name: nuget_connection
+    value: NuGetAmidoStacksServiceConnection
+
+  # SelfConfig
+  # If you haven't specified source_repo at cli runtime please ensure you replace it here
+  # It is case sensitive for TFS based repos
+  - name: self_repo_src
+    value: src/api
+  - name: self_repo_dir
+    value: "$(Agent.BuildDirectory)/s/$(self_repo)"
+  - name: self_repo_tf_src
+    value: deploy/azure/app/kube
+  - name: self_repo_tf_dir
+    value: "$(self_repo_dir)/$(self_repo_tf_src)"
+  - name: self_pipeline_repo
+    value: "$(Agent.BuildDirectory)/s/stacks-pipeline-templates"
+  - name: self_pipeline_scripts_dir
+    value: "$(self_pipeline_repo)/scripts"
+
+   # AppConfig
+  - name: component
+    value: api
+  - name: role
+    value: backend
+
+  # Versioning
+  - name: version_major
+    value: 6
+  - name: version_minor
+    value: 0
+  - name: version_revision
+    value: $[counter(join(variables['version_major'], join('-', variables['version_minor'])), 0)]
+  - name: version_number
+    value: $(version_major).$(version_minor).$(version_revision)
+
+  # Scripts directory used by pipeline steps
+  # - name: scripts_dir
+  #   value: $(Agent.BuildDirectory)/s/stacks-pipeline-templates/azDevOps/azure/templates/v2/scripts
+
+  # DEFAULT IMAGE RUNNER
+  - name: pool_vm_image
+    value: ubuntu-20.04
