@@ -10,12 +10,12 @@
 name: "$(Build.SourceBranchName)-init"
 
 pr:
-  - master
+  - main
 
 trigger:
   branches:
     include:
-      - 'master'
+      - 'main'
   paths:
     include:
       - '*'
@@ -28,125 +28,34 @@ resources:
       ref: refs/tags/v2.0.6
       endpoint: amidostacks
 
-  # containers:
-  #   - container: sonar_scanner
-  #     image: amidostacks/ci-sonarscanner:0.0.3
-  #   - container: k8s_deploy
-  #     image: amidostacks/ci-k8s:0.0.12
-  #   - container: terraform_custom
-  #     image: amidostacks/ci-tf:1.1.6
-
 variables:
   - template: nuget-packages-api-vars.yml
 
 stages:
-  - stage: Build
-    # variables:
-    #   - group: amido-stacks-infra-credentials-nonprod
-    #   - group: stacks-credentials-nonprod-kv
-    #   - group: amido-stacks-webapp
-    #   - name: azure_tenant_id
-    #     value: "$(azure-tenant-id)"
-    #   - name: azure_subscription_id
-    #     value: "$(azure-subscription-id)"
-    #   - name: azure_client_id
-    #     value: "$(azure-client-id)"
-    #   - name: azure_client_secret
-    #     value: "$(azure-client-secret)"
+  - stage: BuildAndRelease
     jobs:
-      - job: AppBuild
-        pool:
-          vmImage: $(pool_vm_image)
-        steps:
-          - checkout: self
+    - job: BuildAndReleasePackage
+      pool:
+        vmImage: "windows-2019"
+      continueOnError: false
+      steps:
+        # Update Build Number
+        - template: azDevOps/azure/templates/v2/steps/build-updatebuildnumber-dotnet.yml@templates
+          parameters:
+            sourcebranch_name: "$(Build.SourceBranchName)"
+            raw_version_number: "$(Version.Number)"
+            default_branch: 'main'
 
-          - checkout: templates
-
-          # Updates the build number in Azure DevOps (requires refresh in the UI to see)
-          - bash: |
-              echo '##vso[build.updatebuildnumber]${{ variables.version_number }}'
-            displayName: 'Update: Build Number'
-
-          # Copy the files into the correct place for packaging
-          - task: Bash@3
-            displayName: Prepare for Packaging
-            inputs:
-              targetType: "inline"
-              workingDirectory: $(Agent.BuildDirectory)/s
-              script: |
-                cp $REPO_NAME/template.csproj .
-                mkdir ./templates
-                pushd templates
-                cp -r ${ROOT_SRC_DIR}/$REPO_NAME .
-                popd
-
-            env:
-              ROOT_SRC_DIR: $(Agent.BuildDirectory)/s
-              REPO_NAME: $(self_repo)
-
-          # Call template to build the package from the templates dir
-          - template: azDevOps/azure/templates/v2/steps/build-pack-test-dotnet.yml@templates
-            parameters:
-              package_path: $(Agent.BuildDirectory)/s
-              dotnet_core_version: 6.0.200
-              version_variable_name: version_number
-
-          # Upload the packages as artefacts
-          - task: PublishPipelineArtifact@1
-            displayName: Publish Templates
-            inputs:
-              path: $(Agent.BuildDirectory)/a
-              artifact: packages
-
-  - stage: Release
-    dependsOn:
-      - Build
-    condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), eq(variables['create_release'], 'true'))
-    variables:
-      - group: amido-stacks-infra-credentials-prod
-      # Note: Following group is not used, because it contains api key information and we are using a service connection in this pipeline.
-      # - group: amido-stacks-nuget-credentials
-
-    jobs:
-      - job: CreateGitHubRelease
-        pool:
-          vmImage: $(pool_vm_image)
-        steps:
-          # Check out the repo so that it can be tagged
-          - checkout: self
-            persistCredentials: true
-
-          # Download the artefacts from the build to create the release from
-          - task: DownloadPipelineArtifact@2
-            inputs:
-              artifact: 'packages'
-              path: $(Build.ArtifactStagingDirectory)/packages
-
-          # Create a tag in the code for this release
-          - task: Bash@3
-            displayName: Tag Code
-            inputs:
-              targetType: "inline"
-              script: |
-                git config user.name "BuildService"
-                git config user.email "builder@${COMPANY}.com"
-
-                git tag -a v${VERSION_NUMBER} -m "Release created by Azure DevOps"
-                git push origin v${VERSION_NUMBER}
-            env:
-              COMPANY: $(company)
-
-          # Create a GitHub release with these packages
-          - task: GitHubRelease@0
-            displayName: Create GitHub Release
-            inputs:
-              gitHubConnection: $(github_release_service_connection)
-              repositoryName: $(github_org)/$(self_repo)
-              tag: $(Build.BuildNumber)
-              assets: |
-                $(Build.ArtifactStagingDirectory)/packages/*.nupkg
-
-          # Push the package to Nuget
-          - template: azDevOps/azure/templates/v2/steps/deploy-push-package-symbols-public.yml@templates
-            parameters:
-              nuget_service_connection: $(nuget_service_connection)
+        # Build and Publish
+        - template: azDevOps/azure/templates/v2/steps/build-dotnet-package.yml@templates
+          parameters:
+            # Build Config
+            test_path: "$(Test.Path)"
+            package_path: "$(Package.Path)"
+            # Deploy Config
+            package_feed: "$(Package.Feed)"
+            publish_symbols: true
+            publish_public: "$(Package.Public)"
+            nuget_service_connection: "$(Package.nuget_service_connection)"
+            # .NET Core version variables
+            dotnet_core_version: "6.0.x"

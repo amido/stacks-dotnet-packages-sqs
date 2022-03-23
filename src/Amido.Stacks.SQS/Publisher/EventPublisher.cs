@@ -1,8 +1,8 @@
 using System.Text.Json;
-using Amazon.Extensions.NETCore.Setup;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using Amido.Stacks.Application.CQRS.ApplicationEvents;
+using Microsoft.Extensions.Options;
 
 namespace Amido.Stacks.SQS.Publisher
 {
@@ -11,30 +11,28 @@ namespace Amido.Stacks.SQS.Publisher
     /// </summary>
     public class EventPublisher : IApplicationEventPublisher
     {
+        private readonly IOptions<AwsSqsConfiguration> _configuration;
         private readonly IAmazonSQS _queueClient;
-        private readonly AWSOptions _awsOptions;
 
         public EventPublisher(
-            IAmazonSQS queueClient,
-            AWSOptions awsOptions)
+            IOptions<AwsSqsConfiguration> configuration,
+            IAmazonSQS queueClient)
         {
+            _configuration = configuration;
             _queueClient = queueClient;
-            _awsOptions = awsOptions;
         }
 
+        /// <summary>
+        /// Publishes an event message to the configured SQS
+        /// </summary>
+        /// <param name="applicationEvent">The message object</param>
+        /// <returns>Task</returns>
         public async Task PublishAsync(IApplicationEvent applicationEvent)
         {
-            /*
-             * serialise message
-             * create message request
-             * publish message to queue
-             */
             var eventReading = JsonSerializer.Serialize(applicationEvent);
-            var messageRequest = new SendMessageRequest(_awsOptions.DefaultClientConfig.ServiceURL, 
+            var messageRequest = new SendMessageRequest(_configuration.Value.QueueUrl, 
                 eventReading);
             await _queueClient.SendMessageAsync(messageRequest);
-            
-            throw new NotImplementedException();
         }
     }
 }

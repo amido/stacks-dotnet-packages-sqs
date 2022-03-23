@@ -1,6 +1,6 @@
-using Amazon.Extensions.NETCore.Setup;
 using Amazon.SQS;
 using Amazon.SQS.Model;
+using Microsoft.Extensions.Options;
 
 namespace Amido.Stacks.SQS.Consumer
 {
@@ -10,24 +10,24 @@ namespace Amido.Stacks.SQS.Consumer
     public class EventConsumer : IEventConsumer
     {
         private readonly IAmazonSQS _queueClient;
-        private readonly AWSOptions _awsOptions;
+        private readonly IOptions<AwsSqsConfiguration> _configuration;
 
-        public EventConsumer(IAmazonSQS queueClient, AWSOptions awsOptions)
+        public EventConsumer(
+            IOptions<AwsSqsConfiguration> configuration,
+            IAmazonSQS queueClient)
         {
+            _configuration = configuration;
             _queueClient = queueClient;
-            _awsOptions = awsOptions;
         }
 
+        /// <summary>
+        /// Retrieves events from the configured SQS
+        /// </summary>
+        /// <returns>Task</returns>
         public async Task ProcessAsync()
         {
-            /*
-            * create message request
-            * retrieve messages from queue
-            */
-            var messageRequest = new ReceiveMessageRequest(_awsOptions.DefaultClientConfig.ServiceURL);
+            var messageRequest = new ReceiveMessageRequest(_configuration.Value.QueueUrl);
             await _queueClient.ReceiveMessageAsync(messageRequest);
-            
-            throw new NotImplementedException();
         }
     }
 }

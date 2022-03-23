@@ -2,26 +2,18 @@ using Amazon.SQS;
 using Amido.Stacks.Application.CQRS.ApplicationEvents;
 using Amido.Stacks.SQS.Consumer;
 using Amido.Stacks.SQS.Publisher;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Amido.Stacks.SQS.Extensions
 {
-    public class ServiceCollectionExtensions
+    public static class ServiceCollectionExtensions
     {
-        private IConfiguration Configuration { get; }
-        
-        public ServiceCollectionExtensions(IConfiguration configuration)
+        /// <summary>
+        /// Add the AWS SQS client for IEventConsumer and IApplicationEventPublisher
+        /// </summary>
+        public static IServiceCollection AddAwsSqs(this IServiceCollection services)
         {
-            Configuration = configuration;
-        }
-        
-        public IServiceCollection AddAwsSqs(IServiceCollection services)
-        {
-            // This will get the config options from appsettings under "AWS" and wrap it with AWSOption model
-            var awsOptions = Configuration.GetAWSOptions();
-            services.AddDefaultAWSOptions(awsOptions);
-            services.AddAWSService<IAmazonSQS>(awsOptions);  
+            services.AddAWSService<IAmazonSQS>();
             services.AddTransient<IEventConsumer, EventConsumer>();
             services.AddTransient<IApplicationEventPublisher, EventPublisher>();
             
