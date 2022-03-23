@@ -18,8 +18,8 @@ namespace Amido.Stacks.SQS.Publisher
             IOptions<AwsSqsConfiguration> configuration,
             IAmazonSQS queueClient)
         {
-            _configuration = configuration;
-            _queueClient = queueClient;
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            _queueClient = queueClient ?? throw new ArgumentNullException(nameof(queueClient));
         }
 
         /// <summary>
