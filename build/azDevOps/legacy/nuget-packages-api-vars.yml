@@ -40,25 +40,7 @@ variables:
   - name: self_pipeline_scripts_dir
     value: "$(self_pipeline_repo)/scripts"
 
-   # AppConfig
-  - name: component
-    value: api
-  - name: role
-    value: backend
 
-  # # Versioning
-  # - name: version_major
-  #   value: 6
-  # - name: version_minor
-  #   value: 0
-  # - name: version_revision
-  #   value: $[counter(join(variables['version_major'], join('-', variables['version_minor'])), 0)]
-  # - name: version_number
-  #   value: $(version_major).$(version_minor).$(version_revision)
-
-  # Scripts directory used by pipeline steps
-  # - name: scripts_dir
-  #   value: $(Agent.BuildDirectory)/s/stacks-pipeline-templates/azDevOps/azure/templates/v2/scripts
 
   # DEFAULT IMAGE RUNNER
   - name: pool_vm_image
@@ -77,10 +59,13 @@ variables:
     value: NuGetAmidoStacksServiceConnection
 
   - name: Package.Path
-    value: "src/Amido.Stacks.DynamoDB"
+    value: "src/Amido.Stacks.SQS"
 
   - name: Test.Path
     value: "$(Package.Path).Tests"
+
+  - name: DotNet.Version
+    value: "6.0.x"
 
 # Versioning
   - name: Version.Major

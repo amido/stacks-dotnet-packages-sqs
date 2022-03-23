@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Amazon.SQS;
 using Amazon.SQS.Model;
+using Amido.Stacks.Configuration;
 using Amido.Stacks.SQS.Consumer;
 using FakeItEasy;
 using FluentAssertions;
@@ -30,7 +31,7 @@ public class EventConsumerTests
         // arrange
         // act
         Action constructor = () =>
-            new EventConsumer(null, A.Fake<IAmazonSQS>());
+            new EventConsumer(null, A.Fake<ISecretResolver<string>>(),A.Fake<IAmazonSQS>());
 
         // assert
         constructor
@@ -40,12 +41,27 @@ public class EventConsumerTests
     }
 
     [Fact]
+    public void Given_ISecretResolverIsNull_Should_ThrowArgumentNullException()
+    {
+        // arrange
+        // act
+        Action constructor = () =>
+            new EventConsumer(A.Fake<IOptions<AwsSqsConfiguration>>(), null,A.Fake<IAmazonSQS>());
+
+        // assert
+        constructor
+            .Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("Value cannot be null. (Parameter 'secretResolver')"); ;
+    }
+
+    [Fact]
     public void Given_IAmazonSQSIsNull_Should_ThrowArgumentNullException()
     {
         // arrange
         // act
         Action constructor = () =>
-            new EventConsumer(A.Fake<IOptions<AwsSqsConfiguration>>(), null);
+            new EventConsumer(A.Fake<IOptions<AwsSqsConfiguration>>(), A.Fake<ISecretResolver<string>>(),null);
 
         // assert
         constructor
@@ -60,7 +76,7 @@ public class EventConsumerTests
         // arrange
         // act
         Action constructor = () =>
-            new EventConsumer(A.Fake<IOptions<AwsSqsConfiguration>>(), A.Fake<IAmazonSQS>());
+            new EventConsumer(A.Fake<IOptions<AwsSqsConfiguration>>(), A.Fake<ISecretResolver<string>>(),A.Fake<IAmazonSQS>());
 
         // assert
         constructor
@@ -74,14 +90,17 @@ public class EventConsumerTests
         // arrange
         var awsSqsConfiguration = new AwsSqsConfiguration
         {
-            QueueUrl = "QueueUrl"
+            QueueUrl = new Secret()
         };
         
         var fakeAmazonSqs = A.Fake<IAmazonSQS>();
         var fakeOptions = A.Fake<IOptions<AwsSqsConfiguration>>();
         A.CallTo(() => fakeOptions.Value).Returns(awsSqsConfiguration);
         
-        var sut = new EventConsumer(fakeOptions, fakeAmazonSqs);
+        var fakeSecretResolver = A.Fake<ISecretResolver<string>>();
+        A.CallTo(() => fakeSecretResolver.ResolveSecretAsync(A<Secret>._)).Returns("QueueUrl");
+        
+        var sut = new EventConsumer(fakeOptions,fakeSecretResolver, fakeAmazonSqs);
         
         // act
         await sut.ProcessAsync();

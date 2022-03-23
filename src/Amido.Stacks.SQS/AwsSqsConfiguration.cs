@@ -1,6 +1,8 @@
+using Amido.Stacks.Configuration;
+
 namespace Amido.Stacks.SQS;
 
 public class AwsSqsConfiguration
 {
-    public string QueueUrl { get; set; }
+    public Secret QueueUrl { get; init; }
 }
