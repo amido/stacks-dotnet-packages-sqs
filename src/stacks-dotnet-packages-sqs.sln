@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		..\LICENSE = ..\LICENSE
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amido.Stacks.SQS.Tests", "Amido.Stacks.SQS.Tests\Amido.Stacks.SQS.Tests.csproj", "{2A957041-96AB-4237-9F34-DFBCA4AC375A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{41974D5E-A73E-4A44-9901-14D78DC7E082}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{41974D5E-A73E-4A44-9901-14D78DC7E082}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{41974D5E-A73E-4A44-9901-14D78DC7E082}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A957041-96AB-4237-9F34-DFBCA4AC375A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A957041-96AB-4237-9F34-DFBCA4AC375A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A957041-96AB-4237-9F34-DFBCA4AC375A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A957041-96AB-4237-9F34-DFBCA4AC375A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{41974D5E-A73E-4A44-9901-14D78DC7E082} = {2C4C1FD4-19E4-469A-8EC2-01109FE316D5}

@@ -1,0 +1,65 @@
+#############################################################################################################################
+# This is a generated file which includes some replacements.                                                                #
+# It is still very much recommended to go through this and ensure all variables are correct for your business/domain        #
+# All variables are defined in a global scope.                                                                              #
+# All Terraform produced resource names are using a labels module ensuring a predictable naming convention                  #
+# E.g.: variables for company, project, stage and component will produce a name of `$company-$project-$stage-$component`    #
+# NB: Some resources e.g. blob storage only allow for alpha numeric characters so the name is adjusted accordingly          #
+#  ==> `$company$project$stage$component`                                                                                   #
+#############################################################################################################################
+name: "$(Build.SourceBranchName)-init"
+
+pr:
+  - main
+
+trigger:
+  branches:
+    include:
+      - 'main'
+  paths:
+    include:
+      - '*'
+
+resources:
+  repositories:
+    - repository: templates
+      type: github
+      name: amido/stacks-pipeline-templates
+      ref: refs/tags/v2.0.6
+      endpoint: amidostacks
+
+variables:
+  - template: nuget-packages-api-vars.yml
+
+stages:
+  - stage: BuildAndRelease
+    jobs:
+    - job: BuildAndReleasePackage
+      pool:
+        vmImage: "windows-2019"
+      continueOnError: false
+      steps:
+        # Update Build Number
+        - template: azDevOps/azure/templates/v2/steps/build-updatebuildnumber-dotnet.yml@templates
+          parameters:
+            sourcebranch_name: "$(Build.SourceBranchName)"
+            raw_version_number: "$(Version.Number)"
+            default_branch: 'main'
+
+  
+        # Build
+        - template: azDevOps/azure/templates/v2/steps/build-pack-test-dotnet.yml@templates
+          parameters:
+            test_path: "$(Test.Path)"
+            package_path: "$(Package.Path)"
+            package_feed: "$(Package.Feed)"
+            dotnet_core_version: "$(DotNet.Version)"
+
+        # Publish
+        - task: NuGetCommand@2
+          displayName: 'Publish: Push Packages Public'
+          inputs:
+            command: 'push'
+            packagesToPush: '$(Build.ArtifactStagingDirectory)/*.nupkg'
+            nuGetFeedType: 'external'
+            publishFeedCredentials: '${{variables.nuget_connection}}'
