@@ -10,18 +10,18 @@ namespace Amido.Stacks.SQS.Consumer
     /// </summary>
     public class EventConsumer : IEventConsumer
     {
-        private readonly IAmazonSQS _queueClient;
-        private readonly IOptions<AwsSqsConfiguration> _configuration;
-        private readonly ISecretResolver<string> _secretResolver;
+        private readonly IAmazonSQS queueClient;
+        private readonly IOptions<AwsSqsConfiguration> configuration;
+        private readonly ISecretResolver<string> secretResolver;
 
         public EventConsumer(
             IOptions<AwsSqsConfiguration> configuration,
             ISecretResolver<string> secretResolver,
             IAmazonSQS queueClient)
         {
-            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
-            _secretResolver = secretResolver ?? throw new ArgumentNullException(nameof(secretResolver));
-            _queueClient = queueClient ?? throw new ArgumentNullException(nameof(queueClient));
+            this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+            this.secretResolver = secretResolver ?? throw new ArgumentNullException(nameof(secretResolver));
+            this.queueClient = queueClient ?? throw new ArgumentNullException(nameof(queueClient));
         }
 
         /// <summary>
@@ -30,9 +30,9 @@ namespace Amido.Stacks.SQS.Consumer
         /// <returns>Task</returns>
         public async Task ProcessAsync()
         {
-            var queueUrl = await _secretResolver.ResolveSecretAsync(_configuration.Value.QueueUrl);
+            var queueUrl = await secretResolver.ResolveSecretAsync(configuration.Value.QueueUrl);
             var messageRequest = new ReceiveMessageRequest(queueUrl);
-            await _queueClient.ReceiveMessageAsync(messageRequest);
+            await queueClient.ReceiveMessageAsync(messageRequest);
         }
     }
 }

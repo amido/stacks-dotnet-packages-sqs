@@ -24,14 +24,14 @@ The library currently supports:
 ### 2.3 Usage in dotnet core application
 
 #### 2.3.1 Event
-In this case the `NotifyEvent` has a `NotifyEventHandler`. The handler implements
+In this case the `MenuCreated` has a `MenuCreatedHandler`. The handler implements
 `Amido.Stacks.Application.CQRS.ApplicationEvents.IApplicationEventHandler<NotifyCommand, bool>` and the command implements
 `Amido.Stacks.Application.CQRS.ApplicationEvents.IApplicationEvent` interfaces.
 
-***NotifyEvent.cs***
+***MenuCreated.cs***
 
 ```cs
-   public class NotifyEvent : IApplicationEvent
+   public class MenuCreated : IApplicationEvent
     {
         public int OperationCode { get; }
         public Guid CorrelationId { get; }
@@ -46,14 +46,14 @@ In this case the `NotifyEvent` has a `NotifyEventHandler`. The handler implement
     }
 ```
 
-***NotifyEventHandler.cs***
+***MenuCreatedHandler.cs***
 
 ```cs
-     public class NotifyEventHandler : IApplicationEventHandler<NotifyEvent>
+     public class MenuCreatedHandler : IApplicationEventHandler<NotifyEvent>
      {
          private readonly ITestable<NotifyEvent> _testable;
 
-         public NotifyEventHandler(ITestable<NotifyEvent> testable)
+         public MenuCreatedHandler(ITestable<NotifyEvent> testable)
          {
              _testable = testable;
          }
