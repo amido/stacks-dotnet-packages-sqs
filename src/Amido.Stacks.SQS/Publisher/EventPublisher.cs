@@ -3,6 +3,7 @@ using Amazon.SQS;
 using Amazon.SQS.Model;
 using Amido.Stacks.Application.CQRS.ApplicationEvents;
 using Amido.Stacks.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Amido.Stacks.SQS.Publisher
@@ -15,15 +16,18 @@ namespace Amido.Stacks.SQS.Publisher
         private readonly IOptions<AwsSqsConfiguration> configuration;
         private readonly ISecretResolver<string> secretResolver;
         private readonly IAmazonSQS queueClient;
+        private readonly ILogger<EventPublisher> logger;
 
         public EventPublisher(
             IOptions<AwsSqsConfiguration> configuration,
             ISecretResolver<string> secretResolver,
-            IAmazonSQS queueClient)
+            IAmazonSQS queueClient,
+            ILogger<EventPublisher> logger)
         {
             this.configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             this.secretResolver = secretResolver ?? throw new ArgumentNullException(nameof(secretResolver));
             this.queueClient = queueClient ?? throw new ArgumentNullException(nameof(queueClient));
+            this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <summary>

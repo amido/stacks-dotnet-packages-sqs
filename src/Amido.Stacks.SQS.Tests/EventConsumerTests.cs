@@ -7,6 +7,7 @@ using Amido.Stacks.Configuration;
 using Amido.Stacks.SQS.Consumer;
 using FakeItEasy;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Xunit;
 
@@ -31,7 +32,11 @@ public class EventConsumerTests
         // arrange
         // act
         Action constructor = () =>
-            new EventConsumer(null, A.Fake<ISecretResolver<string>>(),A.Fake<IAmazonSQS>());
+            new EventConsumer(
+                null, 
+                A.Fake<ISecretResolver<string>>(),
+                A.Fake<IAmazonSQS>(), 
+                A.Fake<ILogger<EventConsumer>>());
 
         // assert
         constructor
@@ -46,7 +51,11 @@ public class EventConsumerTests
         // arrange
         // act
         Action constructor = () =>
-            new EventConsumer(A.Fake<IOptions<AwsSqsConfiguration>>(), null,A.Fake<IAmazonSQS>());
+            new EventConsumer(
+                A.Fake<IOptions<AwsSqsConfiguration>>(), 
+                null,
+                A.Fake<IAmazonSQS>(), 
+                A.Fake<ILogger<EventConsumer>>());
 
         // assert
         constructor
@@ -61,13 +70,36 @@ public class EventConsumerTests
         // arrange
         // act
         Action constructor = () =>
-            new EventConsumer(A.Fake<IOptions<AwsSqsConfiguration>>(), A.Fake<ISecretResolver<string>>(),null);
+            new EventConsumer(
+                A.Fake<IOptions<AwsSqsConfiguration>>(), 
+                A.Fake<ISecretResolver<string>>(),
+                null, 
+                A.Fake<ILogger<EventConsumer>>());
 
         // assert
         constructor
             .Should()
             .Throw<ArgumentNullException>()
             .WithMessage("Value cannot be null. (Parameter 'queueClient')"); ;
+    }
+    
+    [Fact]
+    public void Given_ILoggerIsNull_Should_ThrowArgumentNullException()
+    {
+        // arrange
+        // act
+        Action constructor = () =>
+            new EventConsumer(
+                A.Fake<IOptions<AwsSqsConfiguration>>(), 
+                A.Fake<ISecretResolver<string>>(),
+                A.Fake<IAmazonSQS>(), 
+                null);
+
+        // assert
+        constructor
+            .Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("Value cannot be null. (Parameter 'logger')"); ;
     }
 
     [Fact]
@@ -76,7 +108,11 @@ public class EventConsumerTests
         // arrange
         // act
         Action constructor = () =>
-            new EventConsumer(A.Fake<IOptions<AwsSqsConfiguration>>(), A.Fake<ISecretResolver<string>>(),A.Fake<IAmazonSQS>());
+            new EventConsumer(
+                A.Fake<IOptions<AwsSqsConfiguration>>(), 
+                A.Fake<ISecretResolver<string>>(),
+                A.Fake<IAmazonSQS>(), 
+                A.Fake<ILogger<EventConsumer>>());
 
         // assert
         constructor
@@ -94,13 +130,14 @@ public class EventConsumerTests
         };
         
         var fakeAmazonSqs = A.Fake<IAmazonSQS>();
+        var fakeLogger = A.Fake<ILogger<EventConsumer>>();
         var fakeOptions = A.Fake<IOptions<AwsSqsConfiguration>>();
         A.CallTo(() => fakeOptions.Value).Returns(awsSqsConfiguration);
         
         var fakeSecretResolver = A.Fake<ISecretResolver<string>>();
         A.CallTo(() => fakeSecretResolver.ResolveSecretAsync(A<Secret>._)).Returns("QueueUrl");
         
-        var sut = new EventConsumer(fakeOptions,fakeSecretResolver, fakeAmazonSqs);
+        var sut = new EventConsumer(fakeOptions,fakeSecretResolver, fakeAmazonSqs, fakeLogger);
         
         // act
         await sut.ProcessAsync();

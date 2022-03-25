@@ -8,6 +8,7 @@ using Amido.Stacks.Configuration;
 using Amido.Stacks.SQS.Publisher;
 using FakeItEasy;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Xunit;
 
@@ -32,7 +33,11 @@ public class EventPublisherTests
         // arrange
         // act
         Action constructor = () =>
-            new EventPublisher(null, A.Fake<ISecretResolver<string>>(), A.Fake<IAmazonSQS>());
+            new EventPublisher(
+                null, 
+                A.Fake<ISecretResolver<string>>(), 
+                A.Fake<IAmazonSQS>(), 
+                A.Fake<ILogger<EventPublisher>>());
 
         // assert
         constructor
@@ -47,7 +52,11 @@ public class EventPublisherTests
         // arrange
         // act
         Action constructor = () =>
-            new EventPublisher(A.Fake<IOptions<AwsSqsConfiguration>>(), null,A.Fake<IAmazonSQS>());
+            new EventPublisher(
+                A.Fake<IOptions<AwsSqsConfiguration>>(), 
+                null,
+                A.Fake<IAmazonSQS>(), 
+                A.Fake<ILogger<EventPublisher>>());
 
         // assert
         constructor
@@ -62,7 +71,11 @@ public class EventPublisherTests
         // arrange
         // act
         Action constructor = () =>
-            new EventPublisher(A.Fake<IOptions<AwsSqsConfiguration>>(), A.Fake<ISecretResolver<string>>(),null);
+            new EventPublisher(
+                A.Fake<IOptions<AwsSqsConfiguration>>(), 
+                A.Fake<ISecretResolver<string>>(),
+                null, 
+                A.Fake<ILogger<EventPublisher>>());
 
         // assert
         constructor
@@ -72,12 +85,35 @@ public class EventPublisherTests
     }
 
     [Fact]
+    public void Given_ILoggerIsNull_Should_ThrowArgumentNullException()
+    {
+        // arrange
+        // act
+        Action constructor = () =>
+            new EventPublisher(
+                A.Fake<IOptions<AwsSqsConfiguration>>(), 
+                A.Fake<ISecretResolver<string>>(),
+                A.Fake<IAmazonSQS>(), 
+                null);
+
+        // assert
+        constructor
+            .Should()
+            .Throw<ArgumentNullException>()
+            .WithMessage("Value cannot be null. (Parameter 'logger')"); ;
+    }
+
+    [Fact]
     public void Given_AllRequiredParameters_Should_NotThrow()
     {
         // arrange
         // act
         Action constructor = () =>
-            new EventPublisher(A.Fake<IOptions<AwsSqsConfiguration>>(), A.Fake<ISecretResolver<string>>(),A.Fake<IAmazonSQS>());
+            new EventPublisher(
+                A.Fake<IOptions<AwsSqsConfiguration>>(), 
+                A.Fake<ISecretResolver<string>>(),
+                A.Fake<IAmazonSQS>(), 
+                A.Fake<ILogger<EventPublisher>>());
 
         // assert
         constructor
@@ -97,11 +133,12 @@ public class EventPublisherTests
         var fakeSecretResolver = A.Fake<ISecretResolver<string>>();
         A.CallTo(() => fakeSecretResolver.ResolveSecretAsync(A<Secret>._)).Returns("QueueUrl");
 
-    var fakeAmazonSqs = A.Fake<IAmazonSQS>();
+        var fakeAmazonSqs = A.Fake<IAmazonSQS>();
+        var fakeLogger = A.Fake<ILogger<EventPublisher>>();
         var fakeOptions = A.Fake<IOptions<AwsSqsConfiguration>>();
         A.CallTo(() => fakeOptions.Value).Returns(awsSqsConfiguration);
         
-        var sut = new EventPublisher(fakeOptions, fakeSecretResolver, fakeAmazonSqs);
+        var sut = new EventPublisher(fakeOptions, fakeSecretResolver, fakeAmazonSqs, fakeLogger);
         
         // act
         await sut.PublishAsync(fakeApplicationEvent);
