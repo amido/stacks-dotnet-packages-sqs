@@ -1,6 +1,8 @@
+using Amazon.Runtime;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using Amido.Stacks.Configuration;
+using Amido.Stacks.SQS.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -34,9 +36,27 @@ namespace Amido.Stacks.SQS.Consumer
         /// <returns>Task</returns>
         public async Task ProcessAsync()
         {
+            logger.ProcessEventsRequested();
+
             var queueUrl = await secretResolver.ResolveSecretAsync(configuration.Value.QueueUrl);
             var messageRequest = new ReceiveMessageRequest(queueUrl);
-            await queueClient.ReceiveMessageAsync(messageRequest);
+            try
+            {
+                var response = await queueClient.ReceiveMessageAsync(messageRequest);
+                
+                foreach (var message in response.Messages)
+                {
+                    logger.ProcessEventsCompleted(message.Body);
+                }
+            }
+            catch (AmazonSQSException exception)
+            {
+                logger.ProcessEventsFailed(exception.Message, exception);
+            }
+            catch (AmazonClientException exception)
+            {
+                logger.ProcessEventsFailed(exception.Message, exception);
+            }
         }
     }
 }

@@ -1,8 +1,10 @@
 using System.Text.Json;
+using Amazon.Runtime;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using Amido.Stacks.Application.CQRS.ApplicationEvents;
 using Amido.Stacks.Configuration;
+using Amido.Stacks.SQS.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -37,6 +39,8 @@ namespace Amido.Stacks.SQS.Publisher
         /// <returns>Task</returns>
         public async Task PublishAsync(IApplicationEvent applicationEvent)
         {
+            logger.PublishEventRequested(applicationEvent.CorrelationId.ToString());
+            
             var queueUrl = await secretResolver.ResolveSecretAsync(configuration.Value.QueueUrl);
             var jsonOptions = new JsonSerializerOptions
             {
@@ -44,7 +48,23 @@ namespace Amido.Stacks.SQS.Publisher
             };
             var eventReading = JsonSerializer.Serialize<object>(applicationEvent, jsonOptions);
             var messageRequest = new SendMessageRequest(queueUrl, eventReading);
-            await queueClient.SendMessageAsync(messageRequest);
+
+            try
+            {
+                await queueClient.SendMessageAsync(messageRequest);
+                
+                logger.PublishEventCompleted(applicationEvent.CorrelationId.ToString());
+
+            }
+            catch (AmazonSQSException exception)
+            {
+                logger.PublishEventFailed(applicationEvent.CorrelationId.ToString(), exception.Message, exception);
+
+            }
+            catch (AmazonClientException exception)
+            {
+                logger.PublishEventFailed(applicationEvent.CorrelationId.ToString(), exception.Message, exception);
+            }
         }
     }
 }
