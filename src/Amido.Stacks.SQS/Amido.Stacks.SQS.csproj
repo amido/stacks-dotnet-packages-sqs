@@ -4,6 +4,13 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <LangVersion>10.0</LangVersion>
+        <Description>AWS SQS package for common features used throughout the projects.</Description>
+        <Company>Amido</Company>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/amido/stacks-dotnet-packages-sqs</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/amido/stacks-dotnet-packages-sqs</RepositoryUrl>
+        <RepositoryType>GIT</RepositoryType>
     </PropertyGroup>
 
     <ItemGroup>
@@ -12,7 +19,7 @@
       <PackageReference Include="Amido.Stacks.DependencyInjection" Version="0.2.19" />
       <PackageReference Include="AWSSDK.Extensions.NETCore.Setup" Version="3.7.2" />
       <PackageReference Include="AWSSDK.SQS" Version="3.7.2.38" />
-      <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0-rc.2.21480.5" />
+      <PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
     </ItemGroup>
 
 </Project>
