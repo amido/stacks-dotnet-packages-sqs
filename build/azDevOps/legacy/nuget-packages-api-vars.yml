@@ -48,10 +48,10 @@ variables:
 
 # BuildVars
 # Path specific for this package, change accordingly
-  
+
   - name: Package.Feed
     value: "Stacks"
-  
+
   - name: Package.Public
     value: true
 
@@ -71,7 +71,7 @@ variables:
   - name: Version.Major
     value: 0
   - name: Version.Minor
-    value: 1
+    value: 2
   - name: Version.Revision
     value: $[counter(variables['Version.Minor'], 0)]
   - name: Version.Number
