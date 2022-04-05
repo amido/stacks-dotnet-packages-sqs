@@ -72,7 +72,10 @@ In this case the `MenuCreated` has a `MenuCreatedHandler`. The handler implement
 ```json
 {
   "AwsSqsConfiguration": {
-      "QueueUrl": "SQS_QUEUE_URL"
+      "QueueUrl": {
+        "Identifier": "SQS_QUEUE_URL",
+        "Source": "Environment"
+      }
   }
 }
 ```
