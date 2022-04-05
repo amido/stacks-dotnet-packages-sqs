@@ -1,4 +1,4 @@
-namespace Amido.Stacks.SQS.Consumer
+namespace Amido.Stacks.Messaging.AWS.SQS.Consumer
 {
     public interface IEventConsumer
     {

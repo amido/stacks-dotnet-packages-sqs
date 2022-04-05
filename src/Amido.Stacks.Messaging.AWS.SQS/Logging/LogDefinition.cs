@@ -1,7 +1,7 @@
-using Amido.Stacks.SQS.Events;
+using Amido.Stacks.Messaging.AWS.SQS.Events;
 using Microsoft.Extensions.Logging;
 
-namespace Amido.Stacks.SQS.Logging
+namespace Amido.Stacks.Messaging.AWS.SQS.Logging
 {
     /// <summary>
     /// Contains log definitions for CosmosDB component

@@ -4,11 +4,11 @@ using Amazon.SQS;
 using Amazon.SQS.Model;
 using Amido.Stacks.Application.CQRS.ApplicationEvents;
 using Amido.Stacks.Configuration;
-using Amido.Stacks.SQS.Logging;
+using Amido.Stacks.Messaging.AWS.SQS.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Amido.Stacks.SQS.Publisher
+namespace Amido.Stacks.Messaging.AWS.SQS.Publisher
 {
     /// <summary>
     /// Class implementing the ability to publish an event to AWS SQS

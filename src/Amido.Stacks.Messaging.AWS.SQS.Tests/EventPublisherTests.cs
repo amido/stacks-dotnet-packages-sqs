@@ -5,14 +5,14 @@ using Amazon.SQS;
 using Amazon.SQS.Model;
 using Amido.Stacks.Application.CQRS.ApplicationEvents;
 using Amido.Stacks.Configuration;
-using Amido.Stacks.SQS.Publisher;
+using Amido.Stacks.Messaging.AWS.SQS.Publisher;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace Amido.Stacks.SQS.Tests;
+namespace Amido.Stacks.Messaging.AWS.SQS.Tests;
 
 public class EventPublisherTests
 {
