@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{2C4C1FD4-19E4-469A-8EC2-01109FE316D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amido.Stacks.SQS", "Amido.Stacks.SQS\Amido.Stacks.SQS.csproj", "{41974D5E-A73E-4A44-9901-14D78DC7E082}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amido.Stacks.Messaging.AWS.SQS", "Amido.Stacks.Messaging.AWS.SQS\Amido.Stacks.Messaging.AWS.SQS.csproj", "{41974D5E-A73E-4A44-9901-14D78DC7E082}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{328C7D04-7F11-4368-A8E4-DA59EB9F5490}"
 	ProjectSection(SolutionItems) = preProject
@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		..\LICENSE = ..\LICENSE
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amido.Stacks.SQS.Tests", "Amido.Stacks.SQS.Tests\Amido.Stacks.SQS.Tests.csproj", "{2A957041-96AB-4237-9F34-DFBCA4AC375A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Amido.Stacks.Messaging.AWS.SQS.Tests", "Amido.Stacks.Messaging.AWS.SQS.Tests\Amido.Stacks.Messaging.AWS.SQS.Tests.csproj", "{2A957041-96AB-4237-9F34-DFBCA4AC375A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

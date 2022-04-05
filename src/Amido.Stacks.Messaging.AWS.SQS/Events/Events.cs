@@ -1,4 +1,4 @@
-namespace Amido.Stacks.SQS.Events;
+namespace Amido.Stacks.Messaging.AWS.SQS.Events;
 
 public enum EventCode
 {

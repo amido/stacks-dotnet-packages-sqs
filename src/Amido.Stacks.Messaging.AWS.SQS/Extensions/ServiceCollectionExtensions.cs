@@ -1,10 +1,10 @@
 using Amazon.SQS;
 using Amido.Stacks.Application.CQRS.ApplicationEvents;
-using Amido.Stacks.SQS.Consumer;
-using Amido.Stacks.SQS.Publisher;
+using Amido.Stacks.Messaging.AWS.SQS.Consumer;
+using Amido.Stacks.Messaging.AWS.SQS.Publisher;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Amido.Stacks.SQS.Extensions
+namespace Amido.Stacks.Messaging.AWS.SQS.Extensions
 {
     public static class ServiceCollectionExtensions
     {

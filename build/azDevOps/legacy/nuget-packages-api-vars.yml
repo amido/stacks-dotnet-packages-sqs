@@ -59,7 +59,7 @@ variables:
     value: NuGetAmidoStacksServiceConnection
 
   - name: Package.Path
-    value: "src/Amido.Stacks.SQS"
+    value: "src/Amido.Stacks.Messaging.AWS.SQS"
 
   - name: Test.Path
     value: "$(Package.Path).Tests"

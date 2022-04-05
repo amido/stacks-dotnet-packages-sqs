@@ -4,14 +4,14 @@ using System.Threading.Tasks;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using Amido.Stacks.Configuration;
-using Amido.Stacks.SQS.Consumer;
+using Amido.Stacks.Messaging.AWS.SQS.Consumer;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Xunit;
 
-namespace Amido.Stacks.SQS.Tests;
+namespace Amido.Stacks.Messaging.AWS.SQS.Tests;
 
 public class EventConsumerTests
 {

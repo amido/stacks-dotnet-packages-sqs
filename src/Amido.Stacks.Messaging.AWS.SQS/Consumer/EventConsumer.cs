@@ -2,11 +2,11 @@ using Amazon.Runtime;
 using Amazon.SQS;
 using Amazon.SQS.Model;
 using Amido.Stacks.Configuration;
-using Amido.Stacks.SQS.Logging;
+using Amido.Stacks.Messaging.AWS.SQS.Logging;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Amido.Stacks.SQS.Consumer
+namespace Amido.Stacks.Messaging.AWS.SQS.Consumer
 {
     /// <summary>
     /// Class implementing the ability to consume to an event on AWS SQS

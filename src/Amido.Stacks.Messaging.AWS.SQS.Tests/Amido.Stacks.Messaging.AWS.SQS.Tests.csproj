@@ -3,7 +3,6 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <Nullable>enable</Nullable>
-
         <IsPackable>false</IsPackable>
     </PropertyGroup>
 
@@ -18,7 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Amido.Stacks.SQS\Amido.Stacks.SQS.csproj" />
+      <ProjectReference Include="..\Amido.Stacks.Messaging.AWS.SQS\Amido.Stacks.Messaging.AWS.SQS.csproj" />
     </ItemGroup>
 
 </Project>

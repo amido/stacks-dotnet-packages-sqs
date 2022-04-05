@@ -1,6 +1,6 @@
 using Amido.Stacks.Configuration;
 
-namespace Amido.Stacks.SQS;
+namespace Amido.Stacks.Messaging.AWS.SQS;
 
 public class AwsSqsConfiguration
 {
